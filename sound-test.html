@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>着地音の聞き比べ</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 16px;
+    background: #222831;
+    color: #eeeeee;
+    font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  h1 { font-size: 18px; margin: 0 0 6px; }
+  p { font-size: 13px; color: #aaaaaa; margin: 0 0 16px; text-align: center; line-height: 1.6; }
+  code { background: #393e46; padding: 1px 6px; border-radius: 4px; color: #ffd93d; }
+  .style {
+    width: 100%;
+    max-width: 420px;
+    background: #393e46;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+  }
+  .style.current { outline: 2px solid #ffd93d; }
+  .style h2 { font-size: 16px; margin: 0 0 2px; }
+  .style .note { font-size: 12px; color: #aaaaaa; margin-bottom: 10px; }
+  .buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+  button {
+    flex: 1;
+    min-width: 64px;
+    padding: 10px 6px;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: inherit;
+    border: none;
+    border-radius: 8px;
+    background: #555b6e;
+    color: #eeeeee;
+    cursor: pointer;
+  }
+  button.drop { flex: 1.8; white-space: nowrap; background: #ffd93d; color: #222831; }
+  button:active { transform: scale(0.96); }
+</style>
+</head>
+<body>
+  <h1>着地音の聞き比べ</h1>
+  <p>
+    ボタンを押すと音が鳴ります。「落としてみる」は、ボールが着地して<br>
+    小さく跳ね、周りのボールに触れたときの音の並びです。<br>
+    気に入った音は <code>js/sound.js</code> の <code>LAND_SOUND_STYLE</code> に書くと、ゲームの音になります。
+  </p>
+  <div id="styles"></div>
+
+  <script src="js/sound.js"></script>
+  <script>
+    const STYLES = [
+      { id: "pofu", name: "ポフ", note: "マシュマロ・クッション。こもった息が主役" },
+      { id: "poyo", name: "ポヨ", note: "柔らかいゴムボール。一瞬つぶれて戻る" },
+      { id: "purun", name: "プルン", note: "グミ・ゼリー。ぷるぷる揺れてすぐ収まる" },
+    ];
+    const STRENGTHS = [
+      { label: "小", impact: 0.1 },
+      { label: "中", impact: 0.5 },
+      { label: "大", impact: 1 },
+    ];
+    // 落としてみる：着地 → 小さく跳ねて再着地 → 周りのボールに軽く触れる
+    const DROP_SEQUENCE = [
+      { at: 0, impact: 0.9 },
+      { at: 170, impact: 0.3 },
+      { at: 260, impact: 0.12 },
+      { at: 330, impact: 0.08 },
+    ];
+
+    const container = document.getElementById("styles");
+    for (const style of STYLES) {
+      const box = document.createElement("div");
+      box.className = "style" + (style.id === LAND_SOUND_STYLE ? " current" : "");
+      box.innerHTML =
+        `<h2>${style.name}${style.id === LAND_SOUND_STYLE ? "（今のゲームの音）" : ""}</h2>` +
+        `<div class="note">${style.note}　<code>"${style.id}"</code></div>`;
+
+      const buttons = document.createElement("div");
+      buttons.className = "buttons";
+      for (const strength of STRENGTHS) {
+        const button = document.createElement("button");
+        button.textContent = strength.label;
+        button.addEventListener("click", () => {
+          Sound.unlock();
+          Sound.land(strength.impact, style.id);
+        });
+        buttons.appendChild(button);
+      }
+      const drop = document.createElement("button");
+      drop.className = "drop";
+      drop.textContent = "落としてみる";
+      drop.addEventListener("click", () => {
+        Sound.unlock();
+        for (const hit of DROP_SEQUENCE) {
+          setTimeout(() => Sound.land(hit.impact, style.id), hit.at);
+        }
+      });
+      buttons.appendChild(drop);
+
+      box.appendChild(buttons);
+      container.appendChild(box);
+    }
+  </script>
+</body>
+</html>

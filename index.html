@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>物理演算マッチ3</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <h1>物理演算マッチ3（試作版）</h1>
+
+  <div id="hud">
+    <div class="hud-box">
+      <span class="hud-label">スコア</span>
+      <span id="score">0</span>
+    </div>
+    <div class="hud-box">
+      <span class="hud-label">次のボール</span>
+      <div id="next-ball"><canvas id="next-ball-symbol"></canvas></div>
+    </div>
+    <div class="hud-box">
+      <span class="hud-label">MISS</span>
+      <span id="miss-display">0/3</span>
+    </div>
+  </div>
+
+  <div id="field-wrapper">
+    <canvas id="game-canvas"></canvas>
+    <div id="banner"></div>
+    <div id="game-over">
+      <div class="game-over-title">GAME OVER</div>
+      <div class="game-over-score">スコア <span id="final-score">0</span></div>
+      <button id="retry-button" type="button">もう一度遊ぶ</button>
+    </div>
+  </div>
+
+  <p id="hint">フィールドをタップ（クリック）するとボールが落ちます</p>
+
+  <script src="lib/matter.min.js"></script>
+  <script src="js/sound.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
