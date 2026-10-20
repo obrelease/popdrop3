@@ -959,6 +959,8 @@ setupInitialBoard(
 // ===================================================================
 // 入力：フィールドをタップ／クリックしたらその位置にボールを落とす
 // ===================================================================
+const hintEl = document.getElementById("hint");
+
 canvas.addEventListener("pointerdown", (event) => {
   event.preventDefault();
   // マウスならここで音が有効になり、最初の1球目から鳴る。
@@ -971,4 +973,5 @@ canvas.addEventListener("pointerdown", (event) => {
   const x = (event.clientX - rect.left) * scaleX;
 
   dropBall(x);
+  hintEl.classList.add("hidden"); // 遊び方が伝わったので説明文は消す
 });

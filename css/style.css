@@ -2,29 +2,57 @@
   box-sizing: border-box;
 }
 
+/* ---- 画面全体のレイアウト ----
+   上から「タイトル → HUD → フィールド → 広告枠」。
+   body を画面の高さちょうどにして、フィールドだけが残りの高さを使う（ページはスクロールしない）。
+   場所が足りないときに優先して残す順番：フィールド > HUD > 広告枠 > 説明文・タイトル */
+:root {
+  /* AdMob バナーの高さ。標準バナーは 50px、アダプティブバナーは端末により 50〜60px 程度なので多めに確保。
+     アプリ化したら、SDK から受け取った実際の高さをここに入れる */
+  --ad-height: 60px;
+  --gap: 10px;
+  --side: 16px;
+  background: #222831;
+  overscroll-behavior: none;
+}
+
 body {
   margin: 0;
-  padding: 16px;
+  /* iPhone Safari の 100vh はツールバーを隠したときの高さなので、実際に見えている高さの 100dvh を使う。
+     100dvh に対応していないブラウザは 1 行目の 100vh になる */
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  overscroll-behavior: none;
+  /* viewport-fit=cover でノッチやホームバーの下まで描画されるので、その分を余白で避ける */
+  padding:
+    max(var(--gap), env(safe-area-inset-top))
+    max(var(--side), env(safe-area-inset-right))
+    env(safe-area-inset-bottom)
+    max(var(--side), env(safe-area-inset-left));
   background: #222831;
   color: #eeeeee;
   font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100vh;
   touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 h1 {
-  font-size: 18px;
-  margin: 0 0 12px 0;
+  flex: none;
+  font-size: 16px;
+  margin: 0 0 var(--gap) 0;
   text-align: center;
 }
 
 #hud {
+  flex: none;
   display: flex;
-  gap: 16px;
-  margin-bottom: 12px;
+  gap: 12px;
+  margin-bottom: var(--gap);
   width: 100%;
   max-width: 400px;
   justify-content: space-between;
@@ -72,10 +100,23 @@ h1 {
   white-space: nowrap;
 }
 
+/* HUD と広告枠を除いた残りの高さすべて。container-type: size で、中のフィールドが
+   この枠の幅（cqw）と高さ（cqh）の両方を見て大きさを決められるようにする */
+#field-area {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  container-type: size;
+}
+
+/* 400:650 の比率を保ったまま、枠の幅にも高さにも収まる最大サイズ（最大 400px 幅） */
 #field-wrapper {
   position: relative;
-  width: 100%;
-  max-width: 400px;
+  width: min(100%, 400px); /* コンテナクエリ非対応ブラウザ用（幅だけで決まる） */
+  width: min(100cqw, 100cqh * 400 / 650, 400px);
   aspect-ratio: 400 / 650;
   touch-action: none;
 }
@@ -113,11 +154,89 @@ h1 {
   transform: translate(-50%, -50%) scale(1);
 }
 
+/* 説明文：フィールドの上に重ねて表示し、最初の1球を落としたら消える（レイアウトの場所を取らない） */
 #hint {
-  margin-top: 10px;
-  font-size: 12px;
-  color: #aaaaaa;
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  padding: 8px 14px;
+  max-width: 90%;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 8px;
+  font-size: 13px;
+  color: #dddddd;
   text-align: center;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+#hint.hidden {
+  opacity: 0;
+}
+
+/* 広告枠：今は場所を確保しているだけ（薄い枠線は位置確認用） */
+#ad-slot {
+  flex: none;
+  width: 100%;
+  max-width: 400px;
+  height: var(--ad-height);
+  margin-top: var(--gap);
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+}
+
+/* 背の低い画面：フィールドを少しでも大きくするため、タイトルを消して余白と HUD を詰める */
+@media (max-height: 740px) {
+  :root {
+    --gap: 6px;
+  }
+
+  h1 {
+    display: none;
+  }
+
+  .hud-box {
+    padding: 4px 8px;
+  }
+
+  .hud-label {
+    margin-bottom: 2px;
+  }
+
+  #score {
+    font-size: 18px;
+  }
+}
+
+/* さらに低い画面（iPhone SE など）：HUD の各枠を「ラベル 値」の横並び1行にする */
+@media (max-height: 600px) {
+  .hud-box {
+    flex-direction: row;
+    justify-content: center;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .hud-label {
+    margin-bottom: 0;
+  }
+
+  #score,
+  #miss-display {
+    font-size: 15px;
+  }
+
+  #next-ball {
+    width: 22px;
+    height: 22px;
+  }
+
+  #next-ball-symbol {
+    width: 18px;
+    height: 18px;
+  }
 }
 
 /* ゲームオーバー画面（フィールドの上に重ねて表示） */

@@ -2,7 +2,8 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#222831">
 <title>物理演算マッチ3</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
@@ -24,17 +25,23 @@
     </div>
   </div>
 
-  <div id="field-wrapper">
-    <canvas id="game-canvas"></canvas>
-    <div id="banner"></div>
-    <div id="game-over">
-      <div class="game-over-title">GAME OVER</div>
-      <div class="game-over-score">スコア <span id="final-score">0</span></div>
-      <button id="retry-button" type="button">もう一度遊ぶ</button>
+  <!-- 縦の残りスペースすべて。フィールドはこの中に収まる最大サイズで表示される -->
+  <div id="field-area">
+    <div id="field-wrapper">
+      <canvas id="game-canvas"></canvas>
+      <div id="banner"></div>
+      <!-- 説明文はレイアウトの場所を取らないよう、フィールドの上に重ねて最初の1球で消す -->
+      <p id="hint">タップ（クリック）した位置にボールが落ちます</p>
+      <div id="game-over">
+        <div class="game-over-title">GAME OVER</div>
+        <div class="game-over-score">スコア <span id="final-score">0</span></div>
+        <button id="retry-button" type="button">もう一度遊ぶ</button>
+      </div>
     </div>
   </div>
 
-  <p id="hint">フィールドをタップ（クリック）するとボールが落ちます</p>
+  <!-- 将来の AdMob バナー用の枠。高さは CSS の --ad-height で確保している -->
+  <div id="ad-slot" aria-hidden="true"></div>
 
   <script src="lib/matter.min.js"></script>
   <script src="js/sound.js"></script>
