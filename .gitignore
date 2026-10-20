@@ -1,0 +1,44 @@
+# ---- Node.js ----
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm/
+
+# ---- Web ビルド出力 ----
+dist/
+build/
+.cache/
+
+# ---- Capacitor（iOS） ----
+# npx cap sync / copy で Web 側からコピーされる生成物
+ios/App/App/public/
+ios/App/App/capacitor.config.json
+ios/App/App/config.xml
+ios/capacitor-cordova-ios-plugins/
+
+# CocoaPods（Podfile と Podfile.lock は管理対象に残す）
+ios/App/Pods/
+
+# Xcode のビルド生成物
+ios/App/build/
+ios/App/output/
+DerivedData/
+
+# Xcode の個人設定（ユーザーごとに変わるもの）
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+
+# ---- 環境変数・秘密情報 ----
+.env
+.env.*
+!.env.example
+
+# ---- OS / エディタ ----
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
