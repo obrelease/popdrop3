@@ -961,7 +961,9 @@ setupInitialBoard(
 // ===================================================================
 canvas.addEventListener("pointerdown", (event) => {
   event.preventDefault();
-  Sound.unlock(); // ブラウザの制限で、最初のユーザー操作の後でないと音が出せない
+  // マウスならここで音が有効になり、最初の1球目から鳴る。
+  // タッチ（iPhone など）は指を離した時点で sound.js 側が有効にする
+  Sound.unlock();
 
   const rect = canvas.getBoundingClientRect();
   // 画面上の座標をゲーム内部座標（WIDTH x HEIGHT）に変換する

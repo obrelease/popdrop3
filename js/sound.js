@@ -37,11 +37,22 @@ const Sound = (() => {
   const fileBuffers = {};
 
   // ブラウザは「ユーザー操作の後」でないと音を出させてくれないので、
-  // 最初のタップ／クリックで呼んでもらう
+  // タップ／クリックのたびに呼ぶ（下の UNLOCK_EVENTS で自動登録している）。
+  // 鳴る状態になった後は state を見るだけなので、何度呼んでも軽い
   function unlock() {
     if (!ctx) {
       const AudioContextClass = window.AudioContext || window.webkitAudioContext;
       if (!AudioContextClass) return;
+
+      // iPhone：何もしないと「環境音」扱いで、消音スイッチ ON のとき鳴らない（Safari 17+ で有効）
+      if (navigator.audioSession) {
+        try {
+          navigator.audioSession.type = "playback";
+        } catch (error) {
+          // 対応していなくてもゲームは止めない
+        }
+      }
+
       ctx = new AudioContextClass({ latencyHint: "interactive" }); // 操作への反応を優先
 
       // たくさん同時に鳴っても音割れしないよう、最後にコンプレッサーを通す
@@ -62,8 +73,36 @@ const Sound = (() => {
       noiseBuffer = createNoiseBuffer();
       loadSoundFiles();
     }
-    if (ctx.state === "suspended") ctx.resume();
+    // "suspended" だけでなく、iPhone で着信やバックグラウンド後になる "interrupted" からも戻す
+    if (ctx.state !== "running") {
+      Promise.resolve(ctx.resume()).catch((error) => {
+        console.warn("[sound] AudioContext を再開できませんでした", error);
+      });
+      playSilence();
+    }
   }
+
+  // 古い iPhone は、ユーザー操作の中で実際に何か鳴らさないと音の出口が開かないので、
+  // 1サンプルだけの無音を鳴らしておく
+  function playSilence() {
+    const source = ctx.createBufferSource();
+    source.buffer = ctx.createBuffer(1, 1, ctx.sampleRate);
+    source.connect(ctx.destination);
+    source.start(0);
+  }
+
+  // 音を有効にできる操作の一覧。タッチの pointerdown / touchstart はこれに当たらず、
+  // iPhone ではそこで unlock() しても音が出ないため、指を離した時点のイベントで呼ぶ
+  const UNLOCK_EVENTS = ["pointerup", "touchend", "click", "keydown"];
+  for (const type of UNLOCK_EVENTS) {
+    document.addEventListener(type, unlock, { capture: true, passive: true });
+  }
+  // 別アプリから戻ってきたときにも再開を試す（だめでも次のタップで戻る）
+  document.addEventListener("visibilitychange", () => {
+    if (ctx && document.visibilityState === "visible" && ctx.state !== "running") {
+      Promise.resolve(ctx.resume()).catch(() => {});
+    }
+  });
 
   function isReady() {
     return ctx !== null && ctx.state === "running";
