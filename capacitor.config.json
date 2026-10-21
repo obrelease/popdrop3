@@ -1,5 +1,8 @@
 {
   "appId": "jp.openbox.popdrop3",
   "appName": "PopDrop3",
-  "webDir": "dist"
+  "webDir": "dist",
+  "ios": {
+    "path": "capacitor-ios"
+  }
 }

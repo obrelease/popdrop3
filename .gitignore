@@ -14,17 +14,17 @@ build/
 
 # ---- Capacitor（iOS） ----
 # npx cap sync / copy で Web 側からコピーされる生成物
-ios/App/App/public/
-ios/App/App/capacitor.config.json
-ios/App/App/config.xml
-ios/capacitor-cordova-ios-plugins/
+capacitor-ios/App/App/public/
+capacitor-ios/App/App/capacitor.config.json
+capacitor-ios/App/App/config.xml
+capacitor-ios/capacitor-cordova-ios-plugins/
 
 # CocoaPods（Podfile と Podfile.lock は管理対象に残す）
-ios/App/Pods/
+capacitor-ios/App/Pods/
 
 # Xcode のビルド生成物
-ios/App/build/
-ios/App/output/
+capacitor-ios/App/build/
+capacitor-ios/App/output/
 DerivedData/
 
 # Xcode の個人設定（ユーザーごとに変わるもの）

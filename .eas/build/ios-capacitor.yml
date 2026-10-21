@@ -2,7 +2,8 @@
 # EAS 標準の手順との違い:
 #   - Web ファイル（dist/、ios/App/App/public/）は git 管理外なので、ビルドサーバー上で生成する
 #   - Expo 用の prebuild と、CocoaPods の pod install は行わない（依存は Swift Package Manager）
-#   - Xcode プロジェクトが ios/ 直下ではなく ios/App/ にあるので、Gymfile で場所を指定する
+#   - Capacitor の iOS プロジェクトは capacitor-ios/ にあり、ios は capacitor-ios/App へのシンボリックリンク。
+#     EAS が前提とする「ios/ 直下に xcodeproj」の配置に見せている
 build:
   name: PopDrop3 iOS (Capacitor)
   steps:
@@ -26,7 +27,6 @@ build:
             suppress_xcode_output(true)
             clean(<%- CLEAN %>)
 
-            project("App/App.xcodeproj")
             scheme("<%- SCHEME %>")
             <% if (BUILD_CONFIGURATION) { %>
             configuration("<%- BUILD_CONFIGURATION %>")
