@@ -2,8 +2,14 @@
   "expo": {
     "name": "PopDrop3",
     "slug": "popdrop3",
+    "owner": "obrelease",
     "ios": {
       "bundleIdentifier": "jp.openbox.popdrop3"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "16c0a0fb-859a-4f3a-a6cb-e82eba4960ab"
+      }
     }
   }
 }
