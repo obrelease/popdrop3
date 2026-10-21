@@ -1,0 +1,49 @@
+# Capacitor の iOS プロジェクトを EAS Build でビルドするためのカスタムビルド。
+# EAS 標準の手順との違い:
+#   - Web ファイル（dist/、ios/App/App/public/）は git 管理外なので、ビルドサーバー上で生成する
+#   - Expo 用の prebuild と、CocoaPods の pod install は行わない（依存は Swift Package Manager）
+#   - Xcode プロジェクトが ios/ 直下ではなく ios/App/ にあるので、Gymfile で場所を指定する
+build:
+  name: PopDrop3 iOS (Capacitor)
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - run:
+        name: Web ビルド（dist/ を生成）
+        command: npm run build
+    - run:
+        name: Capacitor の iOS 同期
+        command: npx cap sync ios
+    - eas/resolve_build_config
+    - eas/resolve_apple_team_id_from_credentials:
+        id: resolve_apple_team_id_from_credentials
+    - eas/configure_ios_credentials
+    - eas/configure_ios_version
+    - eas/generate_gymfile_from_template:
+        inputs:
+          credentials: ${ eas.job.secrets.buildCredentials }
+          template: |
+            suppress_xcode_output(true)
+            clean(<%- CLEAN %>)
+
+            project("App/App.xcodeproj")
+            scheme("<%- SCHEME %>")
+            <% if (BUILD_CONFIGURATION) { %>
+            configuration("<%- BUILD_CONFIGURATION %>")
+            <% } %>
+
+            export_options({
+            method: "<%- EXPORT_METHOD %>",
+            provisioningProfiles: {<% _.forEach(PROFILES, function(profile) { %>
+                "<%- profile.BUNDLE_ID %>" => "<%- profile.UUID %>",<% }); %>
+            }
+            })
+
+            export_xcargs "OTHER_CODE_SIGN_FLAGS=\\"--keychain <%- KEYCHAIN_PATH %>\\""
+
+            disable_xcpretty(true)
+            buildlog_path("<%- LOGS_DIRECTORY %>")
+
+            output_directory("<%- OUTPUT_DIRECTORY %>")
+    - eas/run_fastlane
+    - eas/find_and_upload_build_artifacts

@@ -9,6 +9,8 @@ yarn-error.log*
 dist/
 build/
 .cache/
+# EAS のカスタムビルド設定は上の build/ に巻き込まれるので除外しない
+!.eas/build/
 
 # ---- Capacitor（iOS） ----
 # npx cap sync / copy で Web 側からコピーされる生成物

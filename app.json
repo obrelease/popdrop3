@@ -1,0 +1,9 @@
+{
+  "expo": {
+    "name": "PopDrop3",
+    "slug": "popdrop3",
+    "ios": {
+      "bundleIdentifier": "jp.openbox.popdrop3"
+    }
+  }
+}
