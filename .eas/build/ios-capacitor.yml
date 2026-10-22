@@ -39,7 +39,7 @@ build:
             }
             })
 
-            export_xcargs "OTHER_CODE_SIGN_FLAGS=\\"--keychain <%- KEYCHAIN_PATH %>\\""
+            export_xcargs "OTHER_CODE_SIGN_FLAGS=\"--keychain <%- KEYCHAIN_PATH %>\""
 
             disable_xcpretty(true)
             buildlog_path("<%- LOGS_DIRECTORY %>")
