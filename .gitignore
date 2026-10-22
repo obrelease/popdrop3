@@ -18,6 +18,8 @@ capacitor-ios/App/App/public/
 capacitor-ios/App/App/capacitor.config.json
 capacitor-ios/App/App/config.xml
 capacitor-ios/capacitor-cordova-ios-plugins/
+# npx cap sync が生成する SPM プラグインへのシンボリックリンク（node_modules への絶対パス）
+capacitor-ios/App/CapApp-SPM/symlinks/
 
 # CocoaPods（Podfile と Podfile.lock は管理対象に残す）
 capacitor-ios/App/Pods/

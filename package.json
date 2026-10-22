@@ -22,8 +22,11 @@
   },
   "homepage": "https://github.com/obrelease/popdrop3#readme",
   "dependencies": {
+    "@capacitor-firebase/analytics": "^8.5.2",
+    "@capacitor-firebase/crashlytics": "^8.5.2",
     "@capacitor/cli": "^8.5.3",
     "@capacitor/core": "^8.5.3",
-    "@capacitor/ios": "^8.5.3"
+    "@capacitor/ios": "^8.5.3",
+    "firebase": "^12.19.0"
   }
 }

@@ -4,5 +4,19 @@
   "webDir": "dist",
   "ios": {
     "path": "capacitor-ios"
+  },
+  "experimental": {
+    "ios": {
+      "spm": {
+        "packageOptions": {
+          "@capacitor-firebase/analytics": {
+            "symlink": true
+          },
+          "@capacitor-firebase/crashlytics": {
+            "symlink": true
+          }
+        }
+      }
+    }
   }
 }
