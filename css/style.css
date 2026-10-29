@@ -3,9 +3,9 @@
 }
 
 /* ---- 画面全体のレイアウト ----
-   上から「タイトル → HUD → フィールド → 広告枠」。
+   上から「HUD → フィールド → 広告枠」。
    body を画面の高さちょうどにして、フィールドだけが残りの高さを使う（ページはスクロールしない）。
-   場所が足りないときに優先して残す順番：フィールド > HUD > 広告枠 > 説明文・タイトル */
+   場所が足りないときに優先して残す順番：フィールド > HUD > 広告枠 > 説明文 */
 :root {
   /* AdMob バナーの高さ。標準バナーは 50px、アダプティブバナーは端末により 50〜60px 程度なので多めに確保。
      アプリ化したら、SDK から受け取った実際の高さをここに入れる */
@@ -39,13 +39,6 @@ body {
   touch-action: manipulation;
   -webkit-user-select: none;
   user-select: none;
-}
-
-h1 {
-  flex: none;
-  font-size: 16px;
-  margin: 0 0 var(--gap) 0;
-  text-align: center;
 }
 
 #hud {
@@ -107,7 +100,8 @@ h1 {
   min-height: 0;
   width: 100%;
   display: flex;
-  align-items: center;
+  /* 縦長の端末で余った高さは、HUD とフィールドの間ではなくフィールドの下に回す */
+  align-items: flex-start;
   justify-content: center;
   container-type: size;
 }
@@ -187,14 +181,10 @@ h1 {
   border-radius: 4px;
 }
 
-/* 背の低い画面：フィールドを少しでも大きくするため、タイトルを消して余白と HUD を詰める */
+/* 背の低い画面：フィールドを少しでも大きくするため、余白と HUD を詰める */
 @media (max-height: 740px) {
   :root {
     --gap: 6px;
-  }
-
-  h1 {
-    display: none;
   }
 
   .hud-box {
