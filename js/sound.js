@@ -29,12 +29,48 @@ const MASTER_VOLUME = 0.7;
 // sound-test.html で聞き比べて、気に入ったものをここに書く
 const LAND_SOUND_STYLE = "purun";
 
+// 設定画面の SOUND ON/OFF を保存する localStorage のキー（値は "on" / "off"。未保存なら ON）
+const SOUND_SETTING_KEY = "popdrop3.sound";
+
 const Sound = (() => {
   let ctx = null;
   let master = null;
   let direct = null;
   let noiseBuffer = null;
   const fileBuffers = {};
+  let enabled = loadEnabled();
+
+  // プライベートモードなどで localStorage が使えなくても、ゲームは止めず ON 扱いにする
+  function loadEnabled() {
+    try {
+      return localStorage.getItem(SOUND_SETTING_KEY) !== "off";
+    } catch (error) {
+      return true;
+    }
+  }
+
+  // OFF にすると、すべての効果音は playVoice() の入口で止まる。
+  // 鳴っている途中の音（GAME OVER の和音など）も、出口の音量を 0 にしてすぐ消す
+  function setEnabled(on) {
+    enabled = on;
+    try {
+      localStorage.setItem(SOUND_SETTING_KEY, on ? "on" : "off");
+    } catch (error) {
+      // 保存できなくても、今回の起動中は切り替えた状態で動く
+    }
+    applyOutputVolume();
+  }
+
+  function isEnabled() {
+    return enabled;
+  }
+
+  function applyOutputVolume() {
+    if (!ctx) return;
+    const volume = enabled ? MASTER_VOLUME : 0;
+    master.gain.setValueAtTime(volume, ctx.currentTime);
+    direct.gain.setValueAtTime(volume, ctx.currentTime);
+  }
 
   // ブラウザは「ユーザー操作の後」でないと音を出させてくれないので、
   // タップ／クリックのたびに呼ぶ（下の UNLOCK_EVENTS で自動登録している）。
@@ -72,6 +108,7 @@ const Sound = (() => {
 
       noiseBuffer = createNoiseBuffer();
       loadSoundFiles();
+      applyOutputVolume();
     }
     // "suspended" だけでなく、iPhone で着信やバックグラウンド後になる "interrupted" からも戻す
     if (ctx.state !== "running") {
@@ -134,7 +171,7 @@ const Sound = (() => {
   // options: { when: 何秒後に鳴らすか, pitch: 高さの倍率(1=基準), volume: 0〜1,
   //            impact: 0〜1（着地の強さ）, style: 着地音の質感（どちらも合成音用。ファイル再生では無視） }
   function playVoice(name, options = {}) {
-    if (!isReady()) return;
+    if (!enabled || !isReady()) return;
     const when = ctx.currentTime + (options.when || 0);
     const pitch = options.pitch || 1;
     const volume = options.volume === undefined ? 1 : options.volume;
@@ -373,7 +410,7 @@ const Sound = (() => {
   // impact: 0〜1（落下の勢い）。強いほど少し大きく、低く、長くなる
   // style: 聞き比べ用。省略すると LAND_SOUND_STYLE を使う
   function land(impact, style) {
-    if (!isReady()) return;
+    if (!enabled || !isReady()) return;
     if (ctx.currentTime - lastLandTime < LAND_MIN_INTERVAL) return;
     lastLandTime = ctx.currentTime;
 
@@ -416,5 +453,5 @@ const Sound = (() => {
     playVoice("gameover");
   }
 
-  return { unlock, land, clear, bonus, gameOver, playVoice };
+  return { unlock, land, clear, bonus, gameOver, playVoice, setEnabled, isEnabled };
 })();

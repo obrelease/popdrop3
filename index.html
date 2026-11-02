@@ -9,18 +9,23 @@
 </head>
 <body>
   <div id="hud">
-    <div class="hud-box">
-      <span class="hud-label">スコア</span>
-      <span id="score">0</span>
+    <div class="hud-box hud-box-score">
+      <span class="hud-label">SCORE</span>
+      <span id="score" class="hud-number">0</span>
+    </div>
+    <div class="hud-box hud-box-score">
+      <span class="hud-label">BEST</span>
+      <span id="best-score" class="hud-number">0</span>
     </div>
     <div class="hud-box">
-      <span class="hud-label">次のボール</span>
+      <span class="hud-label">NEXT</span>
       <div id="next-ball"><canvas id="next-ball-symbol"></canvas></div>
     </div>
     <div class="hud-box">
       <span class="hud-label">MISS</span>
       <span id="miss-display">0/3</span>
     </div>
+    <button id="settings-button" type="button" aria-label="設定">⚙️</button>
   </div>
 
   <!-- 縦の残りスペースすべて。フィールドはこの中に収まる最大サイズで表示される -->
@@ -32,9 +37,26 @@
       <p id="hint">タップ（クリック）した位置にボールが落ちます</p>
       <div id="game-over">
         <div class="game-over-title">GAME OVER</div>
+        <div class="game-over-new-best">NEW BEST!</div>
         <div class="game-over-score">スコア <span id="final-score">0</span></div>
+        <div class="game-over-best">BEST <span id="final-best">0</span></div>
         <button id="retry-button" type="button">もう一度遊ぶ</button>
       </div>
+    </div>
+  </div>
+
+  <!-- 設定画面（画面全体に重ねる。開いている間はフィールドへのタップを受け付けない） -->
+  <div id="settings" role="dialog" aria-modal="true" aria-labelledby="settings-title" hidden>
+    <div class="settings-panel">
+      <div id="settings-title" class="settings-title">SETTINGS</div>
+      <div class="settings-row">
+        <span class="settings-label">SOUND</span>
+        <div class="settings-toggle" role="group" aria-label="SOUND">
+          <button type="button" data-sound="on">ON</button>
+          <button type="button" data-sound="off">OFF</button>
+        </div>
+      </div>
+      <button id="settings-close" type="button">閉じる</button>
     </div>
   </div>
 
@@ -43,6 +65,7 @@
 
   <script src="lib/matter.min.js"></script>
   <script src="js/sound.js"></script>
+  <script src="js/settings.js"></script>
   <script src="js/game.js"></script>
 </body>
 </html>

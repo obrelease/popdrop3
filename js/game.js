@@ -157,6 +157,39 @@ let unlockedColorCount = getUnlockedCountForScore(0);
 // ---- スコア ----
 let score = 0;
 const scoreEl = document.getElementById("score");
+
+// ---- ベストスコア（端末の localStorage に保存。ゲームオーバー時に上回っていたときだけ更新） ----
+const BEST_SCORE_KEY = "popdrop3.bestScore";
+const bestScoreEl = document.getElementById("best-score");
+
+function loadBestScore() {
+  try {
+    const saved = Number(localStorage.getItem(BEST_SCORE_KEY));
+    return Number.isFinite(saved) && saved > 0 ? saved : 0;
+  } catch (error) {
+    return 0; // localStorage が使えなくてもゲームは止めない
+  }
+}
+
+function saveBestScore(value) {
+  try {
+    localStorage.setItem(BEST_SCORE_KEY, String(value));
+  } catch (error) {
+    // 保存できなくても、表示だけは更新する
+  }
+}
+
+let bestScore = loadBestScore();
+bestScoreEl.textContent = bestScore;
+
+// ゲームオーバー時に呼ぶ。今回のスコアが保存済みのベストを上回ったときだけ保存し、true を返す
+function updateBestScore() {
+  if (score <= bestScore) return false;
+  bestScore = score;
+  saveBestScore(bestScore);
+  bestScoreEl.textContent = bestScore;
+  return true;
+}
 const nextBallEl = document.getElementById("next-ball");
 
 // ---- 消せなかったターンの回数（累積） ----
@@ -277,6 +310,9 @@ function checkGameOver() {
   isGameOver = true;
   Runner.stop(runner); // 盤面をその瞬間の状態で止める
   document.getElementById("final-score").textContent = score;
+  const isNewBest = updateBestScore();
+  document.getElementById("final-best").textContent = bestScore;
+  gameOverEl.classList.toggle("new-best", isNewBest);
   gameOverEl.classList.add("show");
   Sound.gameOver();
 }

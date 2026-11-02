@@ -44,7 +44,7 @@ body {
 #hud {
   flex: none;
   display: flex;
-  gap: 12px;
+  gap: 8px;
   margin-bottom: var(--gap);
   width: 100%;
   max-width: 400px;
@@ -54,12 +54,17 @@ body {
 .hud-box {
   background: #393e46;
   border-radius: 8px;
-  padding: 8px 10px;
+  padding: 8px 6px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 80px;
+  min-width: 0;
   flex: 1;
+}
+
+/* SCORE / BEST は桁が増えるので、NEXT / MISS より少し広く取る */
+.hud-box-score {
+  flex: 1.35;
 }
 
 .hud-label {
@@ -68,9 +73,25 @@ body {
   margin-bottom: 4px;
 }
 
-#score {
-  font-size: 22px;
+.hud-number {
+  font-size: 20px;
   font-weight: bold;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 設定を開く歯車ボタン。フィールドに重ねるとボールを落とすタップと紛らわしいので、HUD の右端に置く */
+#settings-button {
+  flex: none;
+  width: 36px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: #393e46;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 #next-ball {
@@ -195,27 +216,26 @@ body {
     margin-bottom: 2px;
   }
 
-  #score {
-    font-size: 18px;
+  .hud-number {
+    font-size: 17px;
   }
 }
 
-/* さらに低い画面（iPhone SE など）：HUD の各枠を「ラベル 値」の横並び1行にする */
+/* さらに低い画面：HUD の文字と余白をもう一段小さくする。
+   SCORE / BEST / NEXT / MISS の4枠が横に並ぶので「ラベル 値」の横1行にはせず、縦2段のまま詰める */
 @media (max-height: 600px) {
   .hud-box {
-    flex-direction: row;
-    justify-content: center;
-    gap: 6px;
-    min-width: 0;
+    padding: 3px 4px;
   }
 
   .hud-label {
     margin-bottom: 0;
+    font-size: 10px;
   }
 
-  #score,
+  .hud-number,
   #miss-display {
-    font-size: 15px;
+    font-size: 14px;
   }
 
   #next-ball {
@@ -267,8 +287,118 @@ body {
   color: #ffd93d;
 }
 
+.game-over-best {
+  font-size: 14px;
+  color: #aaaaaa;
+  margin-top: -8px;
+}
+
+#final-best {
+  font-weight: bold;
+  color: #eeeeee;
+}
+
+/* ベストスコアを更新したときだけ出す */
+.game-over-new-best {
+  display: none;
+  font-size: 16px;
+  font-weight: bold;
+  color: #ffd93d;
+  letter-spacing: 1px;
+}
+
+#game-over.new-best .game-over-new-best {
+  display: block;
+}
+
 #retry-button {
   margin-top: 6px;
+  padding: 10px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  font-family: inherit;
+  color: #222831;
+  background: #ffd93d;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* ---- 設定画面（画面全体に重ねる） ---- */
+#settings {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding:
+    max(var(--side), env(safe-area-inset-top))
+    max(var(--side), env(safe-area-inset-right))
+    max(var(--side), env(safe-area-inset-bottom))
+    max(var(--side), env(safe-area-inset-left));
+  background: rgba(15, 17, 21, 0.8);
+}
+
+#settings[hidden] {
+  display: none;
+}
+
+.settings-panel {
+  width: 100%;
+  max-width: 320px;
+  padding: 20px;
+  background: #393e46;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.settings-title {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  letter-spacing: 2px;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.settings-label {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+/* ON / OFF の切り替え。選ばれている方を黄色で塗る */
+.settings-toggle {
+  display: flex;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #ffd93d;
+}
+
+.settings-toggle button {
+  width: 64px;
+  padding: 8px 0;
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: bold;
+  color: #ffd93d;
+  background: transparent;
+  cursor: pointer;
+}
+
+.settings-toggle button[aria-pressed="true"] {
+  color: #222831;
+  background: #ffd93d;
+}
+
+#settings-close {
   padding: 10px 24px;
   font-size: 16px;
   font-weight: bold;
