@@ -15,5 +15,12 @@
         "buildConfiguration": "Release"
       }
     }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "ascAppId": "6824882224"
+      }
+    }
   }
 }
