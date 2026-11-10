@@ -1,0 +1,23 @@
+# Capacitor の Android プロジェクトを EAS Build でビルドし、Google Play 用の AAB を作るカスタムビルド。
+# EAS 標準の手順との違い:
+#   - Web ファイル（dist/、android/app/src/main/assets/public/）は git 管理外なので、ビルドサーバー上で生成する
+#   - Expo 用の prebuild は行わない（android/ は Capacitor が生成したものを git で管理している）
+build:
+  name: PopDrop3 Android (Capacitor)
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - run:
+        name: Web ビルド（dist/ を生成）
+        command: npm run build
+    - run:
+        name: Capacitor の Android 同期
+        command: npx cap sync android
+    - eas/resolve_build_config
+    - eas/inject_android_credentials
+    # versionCode は EAS のリモート管理（appVersionSource: remote + autoIncrement）の値で上書きされる
+    - eas/configure_android_version
+    - eas/run_gradle:
+        inputs:
+          command: :app:bundleRelease
+    - eas/find_and_upload_build_artifacts

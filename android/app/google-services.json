@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "875708489770",
+    "project_id": "popdrop3-d434b",
+    "storage_bucket": "popdrop3-d434b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:875708489770:android:e6bfed32d6ba1671a32353",
+        "android_client_info": {
+          "package_name": "jp.openbox.popdrop3"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcODrJADcOZEbJd56SUVmyfoYQEIAacYw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

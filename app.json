@@ -10,6 +10,9 @@
       "eas": {
         "projectId": "16c0a0fb-859a-4f3a-a6cb-e82eba4960ab"
       }
+    },
+    "android": {
+      "package": "jp.openbox.popdrop3"
     }
   }
 }
