@@ -2,7 +2,7 @@
   "expo": {
     "name": "PopDrop3",
     "slug": "popdrop3",
-    "owner": "obrelease",
+    "owner": "ob_release",
     "ios": {
       "bundleIdentifier": "jp.openbox.popdrop3"
     },
