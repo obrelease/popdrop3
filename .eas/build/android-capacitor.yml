@@ -7,6 +7,15 @@ build:
   steps:
     - eas/checkout
     - eas/install_node_modules
+    # Capacitor 8（@capacitor/android と @capacitor-firebase/*）は Java 21 でのコンパイルを要求するが、
+    # EAS の Android イメージは JDK 17 のみなので、JDK 21 を追加して JAVA_HOME を切り替える
+    - run:
+        name: JDK 21 をインストール
+        command: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends openjdk-21-jdk-headless
+          set-env JAVA_HOME /usr/lib/jvm/java-21-openjdk-amd64
+          set-env PATH "/usr/lib/jvm/java-21-openjdk-amd64/bin:$PATH"
     - run:
         name: Web ビルド（dist/ を生成）
         command: npm run build
@@ -17,6 +26,11 @@ build:
     - eas/inject_android_credentials
     # versionCode は EAS のリモート管理（appVersionSource: remote + autoIncrement）の値で上書きされる
     - eas/configure_android_version
+    - run:
+        name: Gradle 実行前の Java バージョン確認
+        command: |
+          java -version
+          echo $JAVA_HOME
     - eas/run_gradle:
         inputs:
           command: :app:bundleRelease
